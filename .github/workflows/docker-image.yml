@@ -14,12 +14,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
-#     - name: Build the Docker image
-#       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
     - name: Create db
       run: docker-compose run web rails db:create
     - name: Run tests
       run: docker-compose run web rails test
+    - name: Build image
+      run: docker build --tag drails-image .
+    - name: Push to ECR
+      id: ecr
+      uses: jwalton/gh-ecr-push@v1
+      with:
+        access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        region: us-east-1
+        local-image: drails-image
+        image: drails-image:dev-${{ github.sha }}, drails-image:latest
