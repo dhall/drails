@@ -18,14 +18,11 @@ jobs:
       run: docker-compose run web rails db:create
     - name: Run tests
       run: docker-compose run web rails test
-    - name: Build image
-      run: docker build . --file Dockerfile --tag drails-image:dev-${{ github.sha }}
-    - name: Push to ECR
-      id: ecr
-      uses: jwalton/gh-ecr-push@v1
+    - uses: vitr/actions-build-and-upload-to-ecs@master
       with:
-        access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+        repo: 317080290092.dkr.ecr.us-east-1.amazonaws.com/drails
         region: us-east-1
-        local-image: drails-image
-        image: drails-image:dev-${{ github.sha }}, drails-image:latest
+        tags: latest,${{ github.sha }}
