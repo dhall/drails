@@ -19,7 +19,7 @@ jobs:
     - name: Run tests
       run: docker-compose run web rails test
     - name: Build image
-      run: docker build --tag drails-image .
+      run: docker build . --file Dockerfile --tag drails-image:dev-${{ github.sha }}
     - name: Push to ECR
       id: ecr
       uses: jwalton/gh-ecr-push@v1
